@@ -1,0 +1,5 @@
+../Core/Src/x5_lite.c:22:6:X5_Init	1
+../Core/Src/x5_lite.c:28:6:X5_SPI_RxCpltCallback	2
+../Core/Src/x5_lite.c:37:6:X5_UpdateButtons	1
+../Core/Src/x5_lite.c:61:6:X5_Meihua	1
+../Core/Src/x5_lite.c:72:6:X5_Joy	1
