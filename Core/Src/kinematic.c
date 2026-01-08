@@ -55,9 +55,8 @@ void omni45_kinematic_pose(CONTROL_POSE *data_pose,OMNIWHEEL *omni, float *wheel
 // for konolomic xdrive test
 void omni45_kinematic2(CONTROLLER *data,OMNIWHEEL *omni, float *wheel_speed) // remeber this
 {
-
-        wheel_speed[0] = (((1 * (data->vx + data->vy)) - ((data->omega) * omni->l)) / omni->r)*(omni->motor_max_speed/omni->wheel_speed_max);//fl
-	    wheel_speed[1] = (((1 * (data->vx - data->vy)) + ((data->omega) * omni->l)) / omni->r)*(omni->motor_max_speed/omni->wheel_speed_max) ;//fr
-	    wheel_speed[2] = (((1 * (-data->vx + data->vy)) + ((data->omega) * omni->l)) / omni->r)*(omni->motor_max_speed/omni->wheel_speed_max);//rl
-	    wheel_speed[3] = -(((1 * (-data->vx - data->vy)) - ((data->omega) * omni->l)) / omni->r)*(omni->motor_max_speed/omni->wheel_speed_max);//rr
+    wheel_speed[0] = (((0.707106781 * (data->vx + data->vy)) - ((data->omega) * omni->l)) / omni->r)*(omni->motor_max_speed/omni->wheel_speed_max);//fl
+	    wheel_speed[1] = (((0.707106781 * (data->vx - data->vy)) + ((data->omega) * omni->l)) / omni->r)*(omni->motor_max_speed/omni->wheel_speed_max) ;//fr
+	    wheel_speed[2] = (((0.707106781 * (-data->vx + data->vy)) + ((data->omega) * omni->l)) / omni->r)*(omni->motor_max_speed/omni->wheel_speed_max);//rl
+	    wheel_speed[3] = -(((0.707106781 * (-data->vx - data->vy)) - ((data->omega) * omni->l)) / omni->r)*(omni->motor_max_speed/omni->wheel_speed_max);//rr
 }

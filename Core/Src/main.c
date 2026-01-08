@@ -55,8 +55,8 @@ typedef struct {
 } PID_t;
 
 float ex,ey,eth;
-int8_t rx,ry,lx,ly;
-int8_t b=0;
+int8_t rx ,ry,lx,ly;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -82,7 +82,8 @@ int8_t can_tx[8]={0};
 uint8_t button =0;
 
 
-float vx_js,   vy_js,   w_js;
+float vx_js=0,vy_js =0, w_js=0;
+int8_t  a= 0, B=0, c=0;
 
 /* USER CODE END PM */
 
@@ -108,7 +109,7 @@ volatile int pulseX=0, pulseY=0;
 float distantX=0.0f, distant_per1CX=0.0f;
 float wheelCircuim = 0.0f;
 float distantY=0.0f, distant_per1CY=0.0f;
-int i =0;
+int countSPI =0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -130,6 +131,7 @@ static void MX_SPI1_Init(void);
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
     X5_SPI_RxCpltCallback(hspi);
+    countSPI++;
 }
 
 void convertTo32bitX() {
@@ -213,8 +215,8 @@ void control(float *vx, float *vy, float *omega){
 void can_data_send(void){
 	Dwheel can ={
 		.FL =(int8_t)(wheel_speedT[0]/6),
-		.RL =(int8_t)(wheel_speedT[2]/6),
-		.FR =(int8_t)(wheel_speedT[1]/6),
+		.RL =(int8_t)(wheel_speedT[1]/6),
+		.FR =(int8_t)(wheel_speedT[2]/6),
 		.RR =(int8_t)(wheel_speedT[3]/6),
 	};
 	memcpy(can_tx, &can, sizeof(Dwheel));
@@ -232,28 +234,42 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim->Instance == TIM7)
 	{
-	 control(&vx ,&vy, &omega);
+	 //control(&vx ,&vy, &omega);
      X5_Joy(&rx,&ry,&lx,&ly);
-		 vx_js = (lx / 50.0f);
-		 vy_js = (ly / 50.0f);
-		 w_js  = (rx / 31.847f);
 
- 		float alpha =0.5f;
+		 a = (lx);
+		 B = (ly );
+		 c = -(rx );
+
+		 if (countSPI >0){
+
+		 vx_js =a/50.f;
+		 vy_js =B/50.0f;
+		 w_js = c /50.0f;
+ 		float alpha =0.0f;
 		controller.vx    = alpha * vx + (1.0f - alpha) * vx_js;
 		controller.vy    = alpha * vy + (1.0f - alpha) * vy_js;
 		controller.omega = alpha * omega  + (1.0f - alpha) * w_js;
+
 		omni45_kinematic(&controller , &omni,wheel_speedT);
 		can_data_send();
-	}
+	}}
 	if(htim->Instance == TIM8){
      	update_odom();
      	X5_UpdateButtons();
 
      	if (Meihua.start_b){
      		//state1
+     	target_t Dise_pose={
+     		  	.x = 0,
+     		  	.y =0,
+     		  	.theta =0
+     		  };
+     		  	target = Dise_pose;
      	}
      	else if(Meihua.retry_b){
      		//state2
+
      	}
      	else if(Meihua.b0){
      		//state3
@@ -288,12 +304,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
      	else if(Meihua.b10){
      	     //state3
      	}
-     	else if(Meihua.b12){
+     	else if(Meihua.b11){
+
+     	}
+     	else if(x5_button.a){
+
+     	}
+     	else{
 
      	}
 
 
-}
+	}
 }
 
 /* USER CODE END 0 */
@@ -310,7 +332,9 @@ int main(void)
   /* USER CODE END 1 */
 
   /* MPU Configuration--------------------------------------------------------*/
-  MPU_Config();
+
+
+	MPU_Config();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -355,12 +379,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  target_t Dise_pose={
-	  					  .x = x,
-	  					  .y =y,
-	  					  .theta =theta
-	  		};
-	  			  target = Dise_pose;
+
+
 
   }
   /* USER CODE END 3 */
